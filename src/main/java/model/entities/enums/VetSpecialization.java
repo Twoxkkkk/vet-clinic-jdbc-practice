@@ -1,4 +1,4 @@
-package model;
+package model.entities.enums;
 
 public enum VetSpecialization {
     THERAPIST("Therapist"),

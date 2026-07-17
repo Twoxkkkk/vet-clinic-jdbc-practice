@@ -1,4 +1,7 @@
-package model;
+package model.entities;
+
+import model.entities.base.BaseEntity;
+import model.entities.enums.PetType;
 
 import java.util.Date;
 
@@ -14,7 +17,7 @@ public class Pet extends BaseEntity {
 
     private int ownerId;
 
-    public Pet(int id, String nickname, Date dateOfBirth, int ownerId,
+    public Pet(Long id, String nickname, Date dateOfBirth, int ownerId,
            boolean sex, double weight, PetType type
         ) {
         super(id);

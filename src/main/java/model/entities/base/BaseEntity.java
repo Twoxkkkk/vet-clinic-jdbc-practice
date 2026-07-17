@@ -1,19 +1,19 @@
-package model;
+package model.entities.base;
 
 public abstract class BaseEntity {
 
-    private int id;
+    private Long id;
 
-    public BaseEntity(int id) {
+    public BaseEntity(Long id) {
         setId(id);
     }
 
-    public int getId() {
-        return id;
+    public Long getId() {
+        return this.id;
     }
 
-    public void setId(int id) {
-        if (id < 0)
+    public void setId(Long id) {
+        if (id == null)
             return;
 
         this.id = id;
@@ -25,5 +25,4 @@ public abstract class BaseEntity {
             "%d%n", this.getId()
         );
     }
-
 }
