@@ -1,7 +1,7 @@
-package model.entities;
+package domain.model.entities;
 
-import model.entities.base.BaseEntity;
-import model.entities.enums.PetType;
+import domain.model.entities.base.BaseEntity;
+import domain.model.entities.enums.PetType;
 
 import java.util.Date;
 

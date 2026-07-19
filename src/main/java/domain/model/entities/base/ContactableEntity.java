@@ -1,7 +1,7 @@
-package model.entities.base;
+package domain.model.entities.base;
 
-import value_objects.objects.Email;
-import value_objects.objects.Phone;
+import domain.model.value_objects.objects.Email;
+import domain.model.value_objects.objects.Phone;
 
 public class ContactableEntity extends BaseEntity{
 

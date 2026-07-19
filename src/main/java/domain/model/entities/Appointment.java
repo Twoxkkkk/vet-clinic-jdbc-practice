@@ -1,6 +1,6 @@
-package model.entities;
+package domain.model.entities;
 
-import model.entities.base.BaseEntity;
+import domain.model.entities.base.BaseEntity;
 
 import java.time.LocalDateTime;
 

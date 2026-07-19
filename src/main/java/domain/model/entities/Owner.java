@@ -1,10 +1,9 @@
-package model.entities;
+package domain.model.entities;
 
-import model.entities.base.BaseEntity;
-import model.entities.base.ContactableEntity;
-import value_objects.objects.Address;
-import value_objects.objects.Email;
-import value_objects.objects.Phone;
+import domain.model.entities.base.ContactableEntity;
+import domain.model.value_objects.objects.Address;
+import domain.model.value_objects.objects.Email;
+import domain.model.value_objects.objects.Phone;
 
 import java.time.LocalDate;
 

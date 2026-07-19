@@ -1,9 +1,9 @@
-package model.entities;
+package domain.model.entities;
 
-import model.entities.base.ContactableEntity;
-import model.entities.enums.VetSpecialization;
-import value_objects.objects.Email;
-import value_objects.objects.Phone;
+import domain.model.entities.base.ContactableEntity;
+import domain.model.entities.enums.VetSpecialization;
+import domain.model.value_objects.objects.Email;
+import domain.model.value_objects.objects.Phone;
 
 public class Vet extends ContactableEntity {
 

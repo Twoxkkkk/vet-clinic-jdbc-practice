@@ -1,6 +1,6 @@
-package value_objects.objects;
+package domain.model.value_objects.objects;
 
-import value_objects.utils.ValidationException;
+import domain.model.value_objects.utils.ValidationException;
 
 public class Address extends BaseValidatableVO{
 

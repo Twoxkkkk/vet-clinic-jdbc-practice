@@ -1,4 +1,4 @@
-package model.entities.base;
+package domain.model.entities.base;
 
 public abstract class BaseEntity {
 

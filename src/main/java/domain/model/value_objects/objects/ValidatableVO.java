@@ -1,4 +1,4 @@
-package value_objects.objects;
+package domain.model.value_objects.objects;
 
 public interface ValidatableVO {
 
