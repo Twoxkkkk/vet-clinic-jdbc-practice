@@ -33,14 +33,17 @@ public class PetOwnerRepositoryImpl implements PetOwnerRepository {
                 registration_date = EXCLUDED.registration_date
        \s""";
 
-        String sqlDeletePets = """
-            DELETE FROM pets WHERE owner_id = ?
-        """;
-
-        String sqlAddPets = """
+        String sqlSavePets = """
             INSERT INTO\s
             pets(id, owner_id, breed_id, nickname, date_of_birth, sex, weight)
             VALUES(?,?,?,?,?,?,?)
+            ON CONFLICT(id) DO UPDATE SET
+                owner_id = EXCLUDED.owner_id,
+                nickname = EXCLUDED.nickname,
+                date_of_birth = EXCLUDED.date_of_birth,
+                sex = EXCLUDED.sex,
+                weight = EXCLUDED.weight,
+                breed_id = EXCLUDED.breed_id
         """;
 
         String contactNumber = petOwner.getContactInfo().phone().getValue();
@@ -59,12 +62,7 @@ public class PetOwnerRepositoryImpl implements PetOwnerRepository {
                     prstmnt.executeUpdate();
                 }
 
-                try (PreparedStatement prstmnt = con.prepareStatement(sqlDeletePets)){
-                    prstmnt.setObject(1, petOwner.getId());
-                    prstmnt.executeUpdate();
-                }
-
-                try (PreparedStatement prstmnt = con.prepareStatement(sqlAddPets)){
+                try (PreparedStatement prstmnt = con.prepareStatement(sqlSavePets)){
                     for (Pet pet: petOwner.getPets()){
                         prstmnt.setObject(1, pet.getId());
                         prstmnt.setObject(2, petOwner.getId());
