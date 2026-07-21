@@ -1,29 +1,46 @@
-package model.entities;
+package domain.vet;
 
-import model.entities.base.ContactableEntity;
-import model.entities.enums.VetSpecialization;
-import value_objects.objects.Email;
-import value_objects.objects.Phone;
+import domain.shared.ContactInfo;
+import domain.shared.Id;
 
-public class Vet extends ContactableEntity {
+public class Vet{
+
+    private Id<Vet> id;
 
     private String firstName;
     private String lastName;
 
-    private Phone contactNumber;
-    private Email email;
+    private ContactInfo contactInfo;
 
     private VetSpecialization specialization;
 
-
-    public Vet(Long id, String firstName, String lastName,
-           VetSpecialization specialization, Phone contactNumber, Email email
+    public Vet(Id<Vet> id, String firstName, String lastName,
+           VetSpecialization specialization, ContactInfo contactInfo
         ) {
-        super(id, email, contactNumber);
-
+        this.setId(id);
         this.setFirstName(firstName);
         this.setLastName(lastName);
         this.setSpecialization(specialization);
+        this.setContactInfo(contactInfo);
+    }
+
+    public ContactInfo getContactInfo() {
+        return contactInfo;
+    }
+
+    public void setContactInfo(ContactInfo contactInfo) {
+        if (contactInfo == null)
+            return;
+
+        this.contactInfo = contactInfo;
+    }
+
+    public Id<Vet> getId() {
+        return id;
+    }
+
+    public void setId(Id<Vet> id) {
+        this.id = id;
     }
 
     public String getFirstName() {
