@@ -1,23 +1,24 @@
-package domain.model.value_objects.objects;
+package domain.shared;
 
-import domain.model.value_objects.utils.ValidationException;
+import domain.shared.exceptions.NullOrBlankException;
+import domain.shared.exceptions.ValidationException;
 
 import java.util.regex.Pattern;
 
-public abstract class BaseValidatableVO implements ValidatableVO{
+public abstract class BaseValidatableVO {
 
     private final String value;
 
-    public BaseValidatableVO(String value) throws ValidationException {
+    public BaseValidatableVO(String value) {
         this.validate(value);
 
         this.value = value;
     }
 
-    protected void validate(String value) throws ValidationException{
+    private void validate(String value) {
 
         if (value == null || value.isBlank()) {
-            throw new ValidationException("Value cannot be null or blank");
+            throw new NullOrBlankException("Value cannot be null or blank");
         }
 
         Pattern pattern = Pattern.compile(this.getValidationPattern());
@@ -29,11 +30,9 @@ public abstract class BaseValidatableVO implements ValidatableVO{
         }
     }
 
-    @Override
-    public abstract String getValidationPattern();
-
-    @Override
     public String getValue(){
         return this.value;
     }
+
+    public abstract String getValidationPattern();
 }

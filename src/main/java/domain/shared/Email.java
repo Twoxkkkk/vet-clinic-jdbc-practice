@@ -1,10 +1,8 @@
-package domain.model.value_objects.objects;
-
-import domain.model.value_objects.utils.ValidationException;
+package domain.shared;
 
 public class Email extends BaseValidatableVO{
 
-    public Email(String value) throws ValidationException {
+    public Email(String value) {
         super(value);
     }
 

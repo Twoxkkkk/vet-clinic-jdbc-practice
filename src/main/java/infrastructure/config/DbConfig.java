@@ -37,28 +37,31 @@ public class DbConfig {
         connectionString = String
                 .format("jdbc:postgresql://vetclinic-db:5432/%s", postgresDBName);
 
-        System.out.println("Successfully opened db connection!");
-        System.out.println("Reading sql script..");
-
         scriptLoader = new ResourceLoader("sql/");
 
         initialize();
     }
 
     public Connection getConnection() throws SQLException {
-        return DriverManager.getConnection
-                (connectionString, postgresUser, postgresPassword);
+        Connection con = DriverManager.getConnection(connectionString, postgresUser, postgresPassword);
+        con.setAutoCommit(false);
+
+        return con;
     }
 
     private void initialize() {
 
         try (Connection con = getConnection()) {
             try {
-                String initScript = scriptLoader.load("db-init.sql", null);
+                String tablesInitScript = scriptLoader.load("db-init-ddl.sql", null);
+                String dataInsertionScript = scriptLoader.load("db-init-dml.sql", null);
 
-                Statement statement = con.createStatement();
+                try(Statement statement = con.createStatement()){
+                    statement.execute(tablesInitScript);
+                    statement.execute(dataInsertionScript);
+                }
 
-                statement.execute(initScript);
+                con.commit();
 
             } catch (IOException e){
                 System.out.println("Couldn't load file!");

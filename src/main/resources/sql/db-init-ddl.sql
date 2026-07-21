@@ -1,7 +1,7 @@
 
 CREATE TABLE IF NOT EXISTS pet_owners (
 
-    id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    id UUID PRIMARY KEY NOT NULL,
     first_name VARCHAR(32) NOT NULL CHECK (trim(first_name) <> ''),
     last_name VARCHAR(32) NOT NULL CHECK (trim(last_name) <> ''),
     contact_number VARCHAR(16) NOT NULL CHECK (trim(contact_number) <> ''),
@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS vet_specializations (
 
 CREATE TABLE IF NOT EXISTS vets (
 
-    id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    id UUID PRIMARY KEY NOT NULL,
     first_name VARCHAR(32) NOT NULL CHECK (trim(first_name) <> ''),
     last_name VARCHAR(32) NOT NULL CHECK (trim(last_name) <> ''),
     contact_number VARCHAR(16) CHECK (trim(contact_number) <> ''),
@@ -41,9 +41,9 @@ CREATE TABLE IF NOT EXISTS breeds (
 
 CREATE TABLE IF NOT EXISTS pets (
 
-    id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    owner_id INT NOT NULL,
-    breed_id INT,
+    id UUID PRIMARY KEY NOT NULL,
+    owner_id UUID NOT NULL,
+    breed_id INT NOT NULL,
     nickname VARCHAR(16) NOT NULL CHECK (trim(nickname) <> ''),
     date_of_birth DATE NOT NULL,
     sex VARCHAR(8) DEFAULT 'UNKNOWN',
@@ -64,12 +64,12 @@ CREATE TABLE IF NOT EXISTS procedures (
 
 CREATE TABLE IF NOT EXISTS appointments (
 
-    id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    vet_id INT NOT NULL,
-    pet_id INT NOT NULL,
+    id UUID PRIMARY KEY NOT NULL,
+    vet_id UUID NOT NULL,
+    pet_id UUID NOT NULL,
     procedure_id INT NOT NULL,
     date_time TIMESTAMP NOT NULL,
-    status VARCHAR(16) NOT NULL DEFAULT 'PENDING',
+    status VARCHAR(16) NOT NULL DEFAULT 'IN_PROGRESS',
 
     CONSTRAINT fk_vet_id FOREIGN KEY (vet_id) REFERENCES vets(id) ON DELETE CASCADE,
     CONSTRAINT fk_pet_id FOREIGN KEY (pet_id) REFERENCES pets(id) ON DELETE CASCADE,
@@ -79,9 +79,9 @@ CREATE TABLE IF NOT EXISTS appointments (
 
 CREATE TABLE IF NOT EXISTS medical_records (
 
-    id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    vet_id INT NOT NULL,
-    pet_id INT NOT NULL,
+    id UUID PRIMARY KEY NOT NULL,
+    vet_id UUID NOT NULL,
+    pet_id UUID NOT NULL,
     diagnosis VARCHAR(64) NOT NULL,
     treatment TEXT NOT NULL,
     record_date DATE,
