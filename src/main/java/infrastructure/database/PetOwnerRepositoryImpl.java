@@ -88,7 +88,22 @@ public class PetOwnerRepositoryImpl implements PetOwnerRepository {
 
     @Override
     public void delete(Id<PetOwner> petOwnerId) {
+        String sqlDeletePetOwner = """
+            DELETE FROM pet_owners
+            WHERE id = ?
+        """;
 
+        try (Connection con = dbConfigInstance.getConnection()) {
+            try (PreparedStatement prstmnt = con.prepareStatement(sqlDeletePetOwner)){
+                prstmnt.setObject(1, petOwnerId.value());
+
+                prstmnt.executeUpdate();
+            }
+            con.commit();
+
+        } catch (SQLException e){
+            throw new TransactionException("Couldn't delete PetOwner from database!", e);
+        }
     }
 
     private PetOwner mapRsToPetOwner(ResultSet rs){
