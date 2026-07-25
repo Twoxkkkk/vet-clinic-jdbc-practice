@@ -6,6 +6,7 @@ import domain.shared.Id;
 import java.util.Optional;
 
 public interface PetOwnerRepository {
+
     void save(PetOwner petOwner);
     void delete(Id<PetOwner> petOwnerId);
 

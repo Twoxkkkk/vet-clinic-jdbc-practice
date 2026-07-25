@@ -4,6 +4,7 @@ import domain.repository.PetOwnerRepository;
 import domain.shared.Id;
 import infrastructure.factory.PetOwnerRepositoryFactory;
 import java.util.Optional;
+import java.util.Scanner;
 import java.util.UUID;
 
 public class Main {
@@ -29,5 +30,9 @@ public class Main {
                 });
             }
         );
+
+        Scanner scanner = new Scanner(System.in);
+
+        scanner.nextLine();
     }
 }

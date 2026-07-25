@@ -16,8 +16,6 @@ import java.util.UUID;
 
 public class PetOwnerRepositoryImpl implements PetOwnerRepository {
 
-    private static final DbConfig dbConfigInstance = DbConfig.getInstance();
-
     @Override
     public void save(PetOwner petOwner) {
         String sqlSavePetOwner = """
@@ -49,10 +47,10 @@ public class PetOwnerRepositoryImpl implements PetOwnerRepository {
         String contactNumber = petOwner.getContactInfo().phone().getValue();
         String email = petOwner.getContactInfo().email().getValue();
 
-        try(Connection con = dbConfigInstance.getConnection()){
+        try(Connection con = DbConfig.getInstance().getConnection()){
             try {
                 try (PreparedStatement prstmnt = con.prepareStatement(sqlSavePetOwner)){
-                    prstmnt.setObject(1, petOwner.getId());
+                    prstmnt.setObject(1, petOwner.getId().value());
                     prstmnt.setString(2, petOwner.getFirstName());
                     prstmnt.setString(3, petOwner.getLastName());
                     prstmnt.setString(4, contactNumber);
@@ -79,10 +77,10 @@ public class PetOwnerRepositoryImpl implements PetOwnerRepository {
                 con.commit();
             } catch (SQLException e){
                 con.rollback();
-                throw new TransactionException("There was an error while operating with PetOwner!", e);
+                throw new TransactionException("There was an error while saving pet owner!", e);
             }
         } catch (SQLException e){
-            throw new TransactionException("Couldn't save PetOwner!", e);
+            throw new TransactionException("Couldn't get database connection!", e);
         }
     }
 
@@ -93,7 +91,7 @@ public class PetOwnerRepositoryImpl implements PetOwnerRepository {
             WHERE id = ?
         """;
 
-        try (Connection con = dbConfigInstance.getConnection()) {
+        try (Connection con = DbConfig.getInstance().getConnection()) {
             try (PreparedStatement prstmnt = con.prepareStatement(sqlDeletePetOwner)){
                 prstmnt.setObject(1, petOwnerId.value());
 
@@ -102,7 +100,7 @@ public class PetOwnerRepositoryImpl implements PetOwnerRepository {
             con.commit();
 
         } catch (SQLException e){
-            throw new TransactionException("Couldn't delete PetOwner from database!", e);
+            throw new TransactionException("Couldn't get database connection!", e);
         }
     }
 
@@ -139,7 +137,7 @@ public class PetOwnerRepositoryImpl implements PetOwnerRepository {
             WHERE o.id = ?
         """;
 
-        try (Connection con = dbConfigInstance.getConnection()){
+        try (Connection con = DbConfig.getInstance().getConnection()){
             PreparedStatement prstmnt = con.prepareStatement(sqlFindPetOwnerAndHisPets);
 
             prstmnt.setObject(1, petOwnerId.value());
@@ -171,7 +169,7 @@ public class PetOwnerRepositoryImpl implements PetOwnerRepository {
                 return Optional.ofNullable(petOwner);
             }
         } catch (SQLException e){
-            throw new QueryException("Couldn't load PetOwner from database!", e);
+            throw new QueryException("Couldn't get database connection!", e);
         }
     }
 }
