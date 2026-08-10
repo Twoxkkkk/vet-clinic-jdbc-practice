@@ -188,29 +188,6 @@ public class AppointmentRepositoryImpl implements AppointmentRepository {
     }
 
     @Override
-    public long countAllActiveByVetId(Id<Vet> vetId) {
-        String sqlFindAllByVetId = """
-            SELECT COUNT(*) FROM appointments
-            WHERE vet_id = ? AND status NOT IN ('CANCELED', 'FINISHED')
-        """;
-
-        List<Appointment> appointments = new ArrayList<>();
-
-        try (Connection con = DbConfig.getInstance().getConnection()){
-            PreparedStatement prstmnt = con.prepareStatement(sqlFindAllByVetId);
-
-            prstmnt.setObject(1, vetId.value());
-
-            try (ResultSet rs = prstmnt.executeQuery()){
-                return rs.getLong(1);
-            }
-
-        } catch (SQLException e){
-            throw new QueryException("Couldn't get database connection!", e);
-        }
-    }
-
-    @Override
     public List<Appointment> findAllForTodayByVetId(Id<Vet> vetId) {
         LocalDate today = LocalDate.now();
 

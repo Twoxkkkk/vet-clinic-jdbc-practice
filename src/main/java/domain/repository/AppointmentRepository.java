@@ -20,7 +20,5 @@ public interface AppointmentRepository {
     List<Appointment> findAllForTodayByVetId(Id<Vet> vetId);
     List<Appointment> findAllForTodayByPetId(Id<Pet> petId);
 
-    long countAllActiveByVetId(Id<Vet> vetId);
-
     Optional<Appointment> findById(Id<Appointment> appointmentId);
 }
