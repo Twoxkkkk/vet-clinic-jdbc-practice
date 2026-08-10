@@ -11,6 +11,7 @@ import infrastructure.database.exceptions.QueryException;
 import infrastructure.database.exceptions.TransactionException;
 
 import java.sql.*;
+import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -227,6 +228,8 @@ public class AppointmentRepositoryImpl implements AppointmentRepository {
             PreparedStatement prstmnt = con.prepareStatement(sqlFindAllForTodayByVetId);
 
             prstmnt.setObject(1, vetId.value());
+            prstmnt.setTimestamp(2, Timestamp.valueOf(startOfDay));
+            prstmnt.setTimestamp(3, Timestamp.valueOf(endOfDay));
 
             try (ResultSet rs = prstmnt.executeQuery()){
                 Appointment appointment;
@@ -261,6 +264,8 @@ public class AppointmentRepositoryImpl implements AppointmentRepository {
             PreparedStatement prstmnt = con.prepareStatement(sqlFindAllForTodayByVetId);
 
             prstmnt.setObject(1, petId.value());
+            prstmnt.setTimestamp(2, Timestamp.valueOf(startOfDay));
+            prstmnt.setTimestamp(3, Timestamp.valueOf(endOfDay));
 
             try (ResultSet rs = prstmnt.executeQuery()){
                 Appointment appointment;
