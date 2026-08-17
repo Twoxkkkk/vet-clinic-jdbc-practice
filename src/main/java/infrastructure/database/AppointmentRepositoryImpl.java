@@ -11,11 +11,12 @@ import infrastructure.database.exceptions.QueryException;
 import infrastructure.database.exceptions.TransactionException;
 
 import java.sql.*;
-import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
+
+//TODO Протестить все методы
 
 public class AppointmentRepositoryImpl implements AppointmentRepository {
 
@@ -96,10 +97,10 @@ public class AppointmentRepositoryImpl implements AppointmentRepository {
     }
 
     @Override
-    public List<Appointment> findAllByPetId(Id<Pet> petId) {
+    public List<Appointment> findAllByPetIdWithStatus(Id<Pet> petId, AppointmentStatus status) {
         String sqlFindAllByPetId = """
             SELECT * FROM appointments
-            WHERE pet_id = ?
+            WHERE pet_id = ? AND status = ?
         """;
 
         List<Appointment> appointments = new ArrayList<>();
@@ -108,6 +109,7 @@ public class AppointmentRepositoryImpl implements AppointmentRepository {
             PreparedStatement prstmnt = con.prepareStatement(sqlFindAllByPetId);
 
             prstmnt.setObject(1, petId.value());
+            prstmnt.setString(2, appointments.toString());
 
             try (ResultSet rs = prstmnt.executeQuery()){
 

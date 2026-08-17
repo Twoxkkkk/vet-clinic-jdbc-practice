@@ -1,14 +1,8 @@
 package domain.repository;
 
-import domain.shared.Id;
 import domain.vet.Vet;
 
-import java.util.Optional;
 
-public interface VetRepository {
+public interface VetRepository extends Repository<Vet>{
 
-    void save(Vet vet);
-    void delete(Id<Vet> vetId);
-
-    Optional<Vet> findById(Id<Vet> vetId);
 }

@@ -26,14 +26,12 @@ public class Appointment{
     public Appointment(Id<Appointment> id, Id<Vet> vetId, Id<Pet> petId,
                 LocalDateTime dateTimeOfAppointment, AppointmentStatus status, ProcedureId procedureId
     ) {
-
         this.setId(id);
         this.setPetId(petId);
         this.setVetId(vetId);
         this.setDateTimeOfAppointment(dateTimeOfAppointment);
         this.setStatus(status);
         this.setProcedureId(procedureId);
-
     }
 
     public Id<Appointment> getId() {
