@@ -1,10 +1,11 @@
 package domain.repository;
 
-import domain.pet_owner.Pet;
 import domain.pet_owner.PetOwner;
 import domain.shared.Email;
 import domain.shared.Id;
 import domain.shared.Phone;
+
+import java.util.Optional;
 
 public interface PetOwnerRepository extends Repository<PetOwner> {
 
