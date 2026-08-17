@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS appointments (
     pet_id UUID NOT NULL,
     procedure_id INT NOT NULL,
     date_time TIMESTAMP NOT NULL,
-    status VARCHAR(16) NOT NULL DEFAULT 'IN_PROGRESS',
+    status VARCHAR(16) NOT NULL DEFAULT 'PLANNED',
 
     CONSTRAINT fk_vet_id FOREIGN KEY (vet_id) REFERENCES vets(id) ON DELETE CASCADE,
     CONSTRAINT fk_pet_id FOREIGN KEY (pet_id) REFERENCES pets(id) ON DELETE CASCADE,

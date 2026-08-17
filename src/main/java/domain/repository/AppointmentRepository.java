@@ -1,13 +1,19 @@
 package domain.repository;
 
 import domain.appointment.Appointment;
+import domain.appointment.AppointmentStatus;
+import domain.pet_owner.Pet;
 import domain.shared.Id;
+import domain.vet.Vet;
 
-import java.util.Optional;
+import java.util.List;
 
-public interface AppointmentRepository {
-    void save(Appointment appointment);
-    void delete(Id<Appointment> appointmentId);
+public interface AppointmentRepository extends Repository<Appointment>{
 
-    Optional<Appointment> findById(Id<Appointment> appointmentId);
+    List<Appointment> findAllByPetIdWithStatus(Id<Pet> petId, AppointmentStatus status);
+    List<Appointment> findAllByVetIdWithStatus(Id<Vet> vetId, AppointmentStatus status);
+
+    List<Appointment> findAllForTodayByVetId(Id<Vet> vetId);
+    List<Appointment> findAllForTodayByPetId(Id<Pet> petId);
+
 }

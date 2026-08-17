@@ -1,17 +1,15 @@
-import domain.pet_owner.Pet;
+
 import domain.pet_owner.PetOwner;
 import domain.repository.PetOwnerRepository;
 import domain.shared.Id;
-import infrastructure.config.DbConfig;
-import infrastructure.database.PetOwnerRepositoryImpl;
-
+import infrastructure.factory.PetOwnerRepositoryFactory;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.UUID;
 
 public class Main {
     public static void main(String[] args) {
-        PetOwnerRepository petOwnerRepository = new PetOwnerRepositoryImpl();
+        PetOwnerRepository petOwnerRepository = new PetOwnerRepositoryFactory().create();
 
         Id<PetOwner> petOwnerId = new Id<>(UUID.fromString("11111111-1111-1111-1111-111111111111"));
 
@@ -32,5 +30,9 @@ public class Main {
                 });
             }
         );
+
+        Scanner scanner = new Scanner(System.in);
+
+        scanner.nextLine();
     }
 }

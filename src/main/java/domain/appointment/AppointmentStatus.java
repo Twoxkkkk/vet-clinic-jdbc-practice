@@ -3,7 +3,6 @@ package domain.appointment;
 public enum AppointmentStatus {
 
     PLANNED("Запланирован"),
-    IN_PROGRESS("В процессе"),
     FINISHED("Завершен"),
     CANCELED("Отменен");
 

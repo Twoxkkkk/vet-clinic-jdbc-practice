@@ -3,6 +3,7 @@ package domain.appointment;
 import domain.pet_owner.Pet;
 import domain.shared.Id;
 
+import domain.shared.ProcedureId;
 import domain.vet.Vet;
 
 
@@ -17,19 +18,20 @@ public class Appointment{
 
     private LocalDateTime dateTimeOfAppointment;
 
+    private ProcedureId procedureId;
+
     private AppointmentStatus status;
 
 
     public Appointment(Id<Appointment> id, Id<Vet> vetId, Id<Pet> petId,
-                LocalDateTime dateTimeOfAppointment, AppointmentStatus status
+                LocalDateTime dateTimeOfAppointment, AppointmentStatus status, ProcedureId procedureId
     ) {
-
         this.setId(id);
-        this.setPetOwnerId(petId);
+        this.setPetId(petId);
         this.setVetId(vetId);
         this.setDateTimeOfAppointment(dateTimeOfAppointment);
         this.setStatus(status);
-
+        this.setProcedureId(procedureId);
     }
 
     public Id<Appointment> getId() {
@@ -38,6 +40,14 @@ public class Appointment{
 
     public void setId(Id<Appointment> id) {
         this.id = id;
+    }
+
+    public ProcedureId getProcedureId() {
+        return procedureId;
+    }
+
+    public void setProcedureId(ProcedureId procedureId) {
+        this.procedureId = procedureId;
     }
 
     public Id<Vet> getVetId() {
@@ -52,7 +62,7 @@ public class Appointment{
         return petId;
     }
 
-    public void setPetOwnerId(Id<Pet> petId) {
+    public void setPetId(Id<Pet> petId) {
         this.petId = petId;
     }
 
