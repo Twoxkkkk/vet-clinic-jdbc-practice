@@ -8,8 +8,6 @@ import domain.shared.Phone;
 
 public interface PetOwnerRepository extends Repository<PetOwner> {
 
-public interface PetOwnerRepository {
-
     Optional<PetOwner> findById(Id<PetOwner> petOwnerId);
     Optional<PetOwner> findByPhoneNumber(Phone number);
     Optional<PetOwner> findByEmail(Email email);
