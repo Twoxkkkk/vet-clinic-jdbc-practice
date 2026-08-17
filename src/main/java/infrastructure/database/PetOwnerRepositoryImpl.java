@@ -172,4 +172,142 @@ public class PetOwnerRepositoryImpl implements PetOwnerRepository {
             throw new QueryException("Couldn't get database connection!", e);
         }
     }
+
+    @Override
+    public Optional<PetOwner> findByPhoneNumber(Phone number) {
+        String sqlFindPetOwnerAndHisPets = """
+            SELECT o.*, p.id AS pet_id, p.breed_id,
+            p.nickname, p.date_of_birth, p.sex, p.weight
+            FROM pet_owners o
+            LEFT JOIN pets p ON p.owner_id = o.id
+            WHERE o.contact_number = ?
+        """;
+
+        try (Connection con = DbConfig.getInstance().getConnection()){
+            PreparedStatement prstmnt = con.prepareStatement(sqlFindPetOwnerAndHisPets);
+
+            prstmnt.setObject(1, number.getValue());
+
+            try (ResultSet rs = prstmnt.executeQuery()){
+                PetOwner petOwner = null;
+
+                while (rs.next()){
+                    if (petOwner == null){
+                        petOwner = mapRsToPetOwner(rs);
+                    }
+
+                    if(rs.getObject("pet_id") != null){
+
+                        Id<Pet> petId = new Id<>((UUID) rs.getObject("pet_id"));
+                        BreedId breedId = new BreedId(rs.getInt("breed_id"));
+                        Id<PetOwner> ownerId = petOwner.getId();
+
+                        String petNickname = rs.getString("nickname");
+                        LocalDate petDateOfBirth =  rs.getDate("date_of_birth").toLocalDate();
+
+                        PetSex sex = PetSex.valueOf(rs.getString("sex"));
+
+                        double weight = rs.getDouble("weight");
+
+                        petOwner.addPetFromDatabase(petId,petNickname, petDateOfBirth, sex, weight, breedId);
+                    }
+                }
+                return Optional.ofNullable(petOwner);
+            }
+        } catch (SQLException e){
+            throw new QueryException("Couldn't get database connection!", e);
+        }
+    }
+
+    @Override
+    public Optional<PetOwner> findByEmail(Email email) {
+        String sqlFindPetOwnerAndHisPets = """
+            SELECT o.*, p.id AS pet_id, p.breed_id,
+            p.nickname, p.date_of_birth, p.sex, p.weight
+            FROM pet_owners o
+            LEFT JOIN pets p ON p.owner_id = o.id
+            WHERE o.email = ?
+        """;
+
+        try (Connection con = DbConfig.getInstance().getConnection()){
+            PreparedStatement prstmnt = con.prepareStatement(sqlFindPetOwnerAndHisPets);
+
+            prstmnt.setObject(1, email.getValue());
+
+            try (ResultSet rs = prstmnt.executeQuery()){
+                PetOwner petOwner = null;
+
+                while (rs.next()){
+                    if (petOwner == null){
+                        petOwner = mapRsToPetOwner(rs);
+                    }
+
+                    if(rs.getObject("pet_id") != null){
+
+                        Id<Pet> petId = new Id<>((UUID) rs.getObject("pet_id"));
+                        BreedId breedId = new BreedId(rs.getInt("breed_id"));
+                        Id<PetOwner> ownerId = petOwner.getId();
+
+                        String petNickname = rs.getString("nickname");
+                        LocalDate petDateOfBirth =  rs.getDate("date_of_birth").toLocalDate();
+
+                        PetSex sex = PetSex.valueOf(rs.getString("sex"));
+
+                        double weight = rs.getDouble("weight");
+
+                        petOwner.addPetFromDatabase(petId,petNickname, petDateOfBirth, sex, weight, breedId);
+                    }
+                }
+                return Optional.ofNullable(petOwner);
+            }
+        } catch (SQLException e){
+            throw new QueryException("Couldn't get database connection!", e);
+        }
+    }
+
+    @Override
+    public Optional<PetOwner> findByPetId(Id<Pet> petsId) {
+        String sqlFindPetOwnerAndHisPets = """
+            SELECT o.*, p.id AS pet_id, p.breed_id,
+            p.nickname, p.date_of_birth, p.sex, p.weight
+            FROM pet_owners o
+            LEFT JOIN pets p ON p.owner_id = o.id
+            WHERE p.id = ?
+        """;
+
+        try (Connection con = DbConfig.getInstance().getConnection()){
+            PreparedStatement prstmnt = con.prepareStatement(sqlFindPetOwnerAndHisPets);
+
+            prstmnt.setObject(1, petsId.value());
+
+            try (ResultSet rs = prstmnt.executeQuery()){
+                PetOwner petOwner = null;
+
+                while (rs.next()){
+                    if (petOwner == null){
+                        petOwner = mapRsToPetOwner(rs);
+                    }
+
+                    if(rs.getObject("pet_id") != null){
+
+                        Id<Pet> petId = new Id<>((UUID) rs.getObject("pet_id"));
+                        BreedId breedId = new BreedId(rs.getInt("breed_id"));
+                        Id<PetOwner> ownerId = petOwner.getId();
+
+                        String petNickname = rs.getString("nickname");
+                        LocalDate petDateOfBirth =  rs.getDate("date_of_birth").toLocalDate();
+
+                        PetSex sex = PetSex.valueOf(rs.getString("sex"));
+
+                        double weight = rs.getDouble("weight");
+
+                        petOwner.addPetFromDatabase(petId,petNickname, petDateOfBirth, sex, weight, breedId);
+                    }
+                }
+                return Optional.ofNullable(petOwner);
+            }
+        } catch (SQLException e){
+            throw new QueryException("Couldn't get database connection!", e);
+        }
+    }
 }
