@@ -6,7 +6,7 @@ public enum AppointmentStatus {
     FINISHED("Завершен"),
     CANCELED("Отменен");
 
-    private String alias;
+    public final String alias;
 
     AppointmentStatus(String alias){
         this.alias = alias;

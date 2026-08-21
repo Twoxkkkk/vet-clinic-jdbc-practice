@@ -6,7 +6,7 @@ public enum VetSpecialization {
     DENTIST("Дантист"),
     DIAGNOSTIC("Диагностик");
 
-    private final String alias;
+    public final String alias;
 
     VetSpecialization(String alias){
         this.alias = alias;

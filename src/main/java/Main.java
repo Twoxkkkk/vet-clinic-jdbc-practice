@@ -1,38 +1,20 @@
-
-import domain.pet_owner.PetOwner;
-import domain.repository.PetOwnerRepository;
+import application.appointment.AppointmentService;
+import domain.appointment.Appointment;
 import domain.shared.Id;
-import infrastructure.factory.PetOwnerRepositoryFactory;
-import java.util.Optional;
-import java.util.Scanner;
+import infrastructure.factory.AppointmentRepositoryFactory;
+
 import java.util.UUID;
 
 public class Main {
     public static void main(String[] args) {
-        PetOwnerRepository petOwnerRepository = new PetOwnerRepositoryFactory().create();
 
-        Id<PetOwner> petOwnerId = new Id<>(UUID.fromString("11111111-1111-1111-1111-111111111111"));
+        AppointmentRepositoryFactory factory = new AppointmentRepositoryFactory();
 
-        Optional<PetOwner> petOwner = petOwnerRepository.findById(petOwnerId);
+        AppointmentService service = new AppointmentService(factory);
 
-        petOwner.ifPresent(petOwnerObject -> {
-                System.out.printf(
-                    "%s %s (%s)%n",
-                    petOwnerObject.getFirstName(), petOwnerObject.getLastName(),
-                    petOwnerObject.getId().value()
-                );
+        String app = service.getAppointmentDetails(new Id<>(UUID.fromString("77777777-7777-7777-7777-777777777777")));
 
-                System.out.println("Животные:");
+        System.out.println(app);
 
-                petOwnerObject.getPets()
-                .forEach((p)->{
-                    System.out.println(p.getNickname());
-                });
-            }
-        );
-
-        Scanner scanner = new Scanner(System.in);
-
-        scanner.nextLine();
     }
 }

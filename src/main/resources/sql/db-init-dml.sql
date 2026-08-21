@@ -1,6 +1,20 @@
+TRUNCATE TABLE
+    medical_records, 
+    appointments, 
+    pets, 
+    vets, 
+    pet_owners, 
+    procedures, 
+    breeds, 
+    vet_specializations 
+RESTART IDENTITY CASCADE;
+
+
 INSERT INTO vet_specializations (type) VALUES
-('Терапевт'),
-('Хирург');
+('THERAPIST'),
+('DENTIST'),
+('DIAGNOSTIC'),
+('SURGEON');
 
 INSERT INTO breeds (pet_type, name) VALUES
 ('Собака', 'Лабрадор'),

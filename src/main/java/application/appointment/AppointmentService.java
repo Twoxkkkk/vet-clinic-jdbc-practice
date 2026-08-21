@@ -1,5 +1,8 @@
-package application;
+package application.appointment;
 
+import application.BaseService;
+import application.RepositoryFactory;
+import application.appointment.dto.AppointmentDetailsDto;
 import domain.appointment.Appointment;
 import domain.appointment.AppointmentStatus;
 import domain.pet_owner.Pet;
@@ -10,9 +13,12 @@ import domain.vet.Vet;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 
-public class AppointmentService extends BaseService<Appointment, AppointmentRepository>{
+public class AppointmentService extends BaseService<Appointment, AppointmentRepository> {
 
     public AppointmentService(RepositoryFactory<AppointmentRepository> repositoryFactory){
         super(repositoryFactory);
@@ -73,6 +79,31 @@ public class AppointmentService extends BaseService<Appointment, AppointmentRepo
 
     public List<Appointment> getAllForTodayByPetId(Id<Pet> petId){
         return repository.findAllForTodayByPetId(petId);
+    }
+
+    public String getAppointmentDetails(Id<Appointment> appointmentId){
+
+
+        Optional<AppointmentDetailsDto> detailsDto = repository.getDetailsById(appointmentId);
+
+        if(detailsDto.isPresent()){
+
+            AppointmentDetailsDto details = detailsDto.get();
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMMM HH:mm", new Locale("ru"));
+
+            return String.format(
+                "[%s][%s][Статус: %s]%nВетеринар: %s (%s)%nПитомец: %s (%s)%nХозяин: %s%nТелефон: %s%n",
+                formatter.format(details.appointmentDateTime()), details.procedureType(), details.appointmentStatus().alias,
+                details.vetInitials(), details.vetSpecialization().alias, details.petNickname(), details.petType(),
+                details.ownerInitials(), details.ownerContactNumber()
+            );
+        }
+
+        throw new IllegalArgumentException(
+            "Couldn't get details for appointment with id: " + appointmentId
+        );
+
     }
 
 }

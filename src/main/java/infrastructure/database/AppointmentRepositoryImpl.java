@@ -1,11 +1,13 @@
 package infrastructure.database;
 
+import application.appointment.dto.AppointmentDetailsDto;
 import domain.appointment.Appointment;
 import domain.appointment.AppointmentStatus;
 import domain.pet_owner.Pet;
 import domain.repository.AppointmentRepository;
 import domain.shared.*;
 import domain.vet.Vet;
+import domain.vet.VetSpecialization;
 import infrastructure.config.DbConfig;
 import infrastructure.database.exceptions.QueryException;
 import infrastructure.database.exceptions.TransactionException;
@@ -15,8 +17,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
-
-//TODO Протестить все методы
 
 public class AppointmentRepositoryImpl implements AppointmentRepository {
 
@@ -259,5 +259,68 @@ public class AppointmentRepositoryImpl implements AppointmentRepository {
         } catch (SQLException e){
             throw new QueryException("Couldn't get database connection!", e);
         }
+    }
+
+    @Override
+    public Optional<AppointmentDetailsDto> getDetailsById(Id<Appointment> appointmentId) {
+        String sqlGetDetails = """
+            SELECT a.id AS appointment_id, a.date_time AS date_time, a.status AS status,
+            CONCAT(v.last_name, ' ', SUBSTRING(v.first_name FROM 1 FOR 1), '.') AS vet_initials,
+            s.type as vet_specialization,
+            CONCAT(o.last_name, ' ', SUBSTRING(o.first_name FROM 1 FOR 1), '.') AS owner_initials,
+            o.contact_number as owner_contact_number,
+            p.nickname as pet_nickname,
+            b.pet_type as pet_type,
+            pr.name as procedure_type
+            
+            FROM appointments a
+            
+            JOIN vets v ON a.vet_id = v.id
+        
+            JOIN pets p ON p.id = a.pet_id
+            JOIN pet_owners o ON p.owner_id = o.id
+
+            JOIN vet_specializations s ON v.specialization_id = s.id
+            
+            JOIN breeds b ON b.id = p.breed_id
+            JOIN procedures pr ON pr.id = a.procedure_id
+
+            WHERE a.id = ?
+        """;
+
+        try (Connection con = DbConfig.getInstance().getConnection()){
+            PreparedStatement prstmnt = con.prepareStatement(sqlGetDetails);
+
+            prstmnt.setObject(1, appointmentId.value());
+
+            try (ResultSet rs = prstmnt.executeQuery()){
+
+                if(rs.next()){
+                    AppointmentDetailsDto detailsDto = new AppointmentDetailsDto(
+                        new Id<Appointment>((UUID) rs.getObject("appointment_id")),
+                        rs.getTimestamp("date_time").toLocalDateTime(),
+                        AppointmentStatus.valueOf(rs.getString("status")),
+                        rs.getString("vet_initials"),
+                        VetSpecialization.valueOf(rs.getString("vet_specialization")),
+                        rs.getString("owner_initials"),
+                        rs.getString("owner_contact_number"),
+                        rs.getString("pet_nickname"),
+                        rs.getString("pet_type"),
+                        rs.getString("procedure_type"),
+                        Collections.emptyList()
+                    );
+
+                    return Optional.of(detailsDto);
+                }
+
+
+            }
+
+        } catch (SQLException e){
+            throw new QueryException("Couldn't get database connection!", e);
+        }
+
+        return Optional.empty();
+
     }
 }
