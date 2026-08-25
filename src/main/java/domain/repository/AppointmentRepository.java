@@ -1,12 +1,14 @@
 package domain.repository;
 
 import application.appointment.dto.AppointmentDetailsDto;
+import application.appointment.dto.AppointmentOverdueDto;
 import domain.appointment.Appointment;
 import domain.appointment.AppointmentStatus;
 import domain.pet_owner.Pet;
 import domain.shared.Id;
 import domain.vet.Vet;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,6 +19,8 @@ public interface AppointmentRepository extends Repository<Appointment>{
 
     List<Appointment> findAllForTodayByVetId(Id<Vet> vetId);
     List<Appointment> findAllForTodayByPetId(Id<Pet> petId);
+
+    List<AppointmentOverdueDto> getAllPlannedBeforeDate(LocalDateTime dateTime);
 
     Optional<AppointmentDetailsDto> getDetailsById(Id<Appointment> appointmentId);
 

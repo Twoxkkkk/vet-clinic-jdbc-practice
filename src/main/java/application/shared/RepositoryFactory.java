@@ -1,4 +1,4 @@
-package application;
+package application.shared;
 
 public interface RepositoryFactory<T> {
     T create();

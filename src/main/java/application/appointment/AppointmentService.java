@@ -1,12 +1,15 @@
 package application.appointment;
 
-import application.BaseService;
-import application.RepositoryFactory;
+import application.shared.BaseService;
+import application.shared.RepositoryFactory;
 import application.appointment.dto.AppointmentDetailsDto;
+import application.appointment.dto.AppointmentOverdueDto;
+import application.shared.NotificationSender;
 import domain.appointment.Appointment;
 import domain.appointment.AppointmentStatus;
 import domain.pet_owner.Pet;
 import domain.repository.AppointmentRepository;
+import domain.shared.Email;
 import domain.shared.Id;
 import domain.shared.ProcedureId;
 import domain.vet.Vet;
@@ -19,6 +22,8 @@ import java.util.Locale;
 import java.util.Optional;
 
 public class AppointmentService extends BaseService<Appointment, AppointmentRepository> {
+
+    private static final DateTimeFormatter dateTimeHumanizeFormatter = DateTimeFormatter.ofPattern("d MMMM HH:mm", new Locale("ru"));
 
     public AppointmentService(RepositoryFactory<AppointmentRepository> repositoryFactory){
         super(repositoryFactory);
@@ -65,6 +70,14 @@ public class AppointmentService extends BaseService<Appointment, AppointmentRepo
         repository.save(appointment);
     }
 
+    public void finishAppointment(Id<Appointment> appointmentId){
+        Appointment appointment = this.getById(appointmentId);
+
+        appointment.setStatus(AppointmentStatus.FINISHED);
+
+        repository.save(appointment);
+    }
+
     public List<Appointment> getAllByVetIdWithStatus(Id<Vet> vetId, AppointmentStatus status){
         return repository.findAllByVetIdWithStatus(vetId, status);
     }
@@ -81,8 +94,33 @@ public class AppointmentService extends BaseService<Appointment, AppointmentRepo
         return repository.findAllForTodayByPetId(petId);
     }
 
-    public String getAppointmentDetails(Id<Appointment> appointmentId){
+    public void notifyAboutMissedAppointments(NotificationSender<Email> notificationSender){
 
+        LocalDateTime today = LocalDate.now().atStartOfDay();
+
+        List<AppointmentOverdueDto> missedAppointments = repository.getAllPlannedBeforeDate(today);
+
+        if (missedAppointments.isEmpty()) return;
+
+        for(AppointmentOverdueDto appointmentOverdueDto: missedAppointments){
+            String formattedDateTimeOfAppointment = dateTimeHumanizeFormatter
+                    .format(appointmentOverdueDto.appointment().getDateTimeOfAppointment());
+
+            String body = String.format(
+                "Дорогой, %s%nСпешим вам сообщить, что вы не пришли на приём, запланированный на %s.%nВы можете перезаписаться в приложении.",
+                appointmentOverdueDto.ownerInitials(), formattedDateTimeOfAppointment
+            );
+
+            notificationSender.send(
+                appointmentOverdueDto.ownerEmail(),
+        "Пропущенный приём.",
+                body
+            );
+        }
+
+    }
+
+    public String getAppointmentDetails(Id<Appointment> appointmentId){
 
         Optional<AppointmentDetailsDto> detailsDto = repository.getDetailsById(appointmentId);
 
@@ -90,11 +128,9 @@ public class AppointmentService extends BaseService<Appointment, AppointmentRepo
 
             AppointmentDetailsDto details = detailsDto.get();
 
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d MMMM HH:mm", new Locale("ru"));
-
             return String.format(
                 "[%s][%s][Статус: %s]%nВетеринар: %s (%s)%nПитомец: %s (%s)%nХозяин: %s%nТелефон: %s%n",
-                formatter.format(details.appointmentDateTime()), details.procedureType(), details.appointmentStatus().alias,
+                dateTimeHumanizeFormatter.format(details.appointmentDateTime()), details.procedureType(), details.appointmentStatus().alias,
                 details.vetInitials(), details.vetSpecialization().alias, details.petNickname(), details.petType(),
                 details.ownerInitials(), details.ownerContactNumber()
             );
@@ -103,7 +139,6 @@ public class AppointmentService extends BaseService<Appointment, AppointmentRepo
         throw new IllegalArgumentException(
             "Couldn't get details for appointment with id: " + appointmentId
         );
-
     }
 
 }

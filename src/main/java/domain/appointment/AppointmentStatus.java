@@ -4,7 +4,8 @@ public enum AppointmentStatus {
 
     PLANNED("Запланирован"),
     FINISHED("Завершен"),
-    CANCELED("Отменен");
+    CANCELED("Отменен"),
+    MISSED("Просрочен");
 
     public final String alias;
 

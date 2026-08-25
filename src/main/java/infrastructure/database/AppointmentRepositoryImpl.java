@@ -1,6 +1,7 @@
 package infrastructure.database;
 
 import application.appointment.dto.AppointmentDetailsDto;
+import application.appointment.dto.AppointmentOverdueDto;
 import domain.appointment.Appointment;
 import domain.appointment.AppointmentStatus;
 import domain.pet_owner.Pet;
@@ -85,7 +86,7 @@ public class AppointmentRepositoryImpl implements AppointmentRepository {
             Id<Pet> petId = new Id<>((UUID) rs.getObject("pet_id"));
 
             ProcedureId procedureId = new ProcedureId(rs.getInt("procedure_id"));
-            LocalDateTime dateTime = LocalDateTime.from(rs.getDate("date_time").toInstant());
+            LocalDateTime dateTime = rs.getTimestamp("date_time").toLocalDateTime();
 
             AppointmentStatus status = AppointmentStatus.valueOf(rs.getString("status"));
 
@@ -262,6 +263,56 @@ public class AppointmentRepositoryImpl implements AppointmentRepository {
     }
 
     @Override
+    public List<AppointmentOverdueDto> getAllPlannedBeforeDate(LocalDateTime dateTime) {
+        String sqlMarkAllPlannedBeforeMissed = """
+        UPDATE appointments app
+        SET status = 'MISSED'
+        
+        FROM pets p
+        JOIN pet_owners o ON o.id = p.owner_id
+        
+        WHERE app.pet_id = p.id AND app.date_time < ? AND app.status = 'PLANNED'
+        
+        RETURNING
+            app.id,
+            app.vet_id,
+            app.pet_id,
+            app.date_time,
+            app.status,
+            app.procedure_id,
+            o.email AS owner_email,
+            CONCAT(o.last_name, ' ', SUBSTRING(o.first_name FROM 1 FOR 1), '.') AS owner_initials
+        """;
+
+        List<AppointmentOverdueDto> appointments = new ArrayList<>();
+
+        try (Connection con = DbConfig.getInstance().getConnection()){
+
+            PreparedStatement prstmnt = con.prepareStatement(sqlMarkAllPlannedBeforeMissed);
+
+            prstmnt.setTimestamp(1, Timestamp.valueOf(dateTime));;
+
+            try (ResultSet rs = prstmnt.executeQuery()){
+
+                while (rs.next()){
+                    Appointment appointment = mapRsToAppointment(rs);
+
+                    AppointmentOverdueDto appointmentOverdueDto = new AppointmentOverdueDto(
+                        appointment,
+                        new Email(rs.getString("owner_email")),
+                        rs.getString("owner_initials")
+                    );
+
+                    appointments.add(appointmentOverdueDto);
+                }
+                return appointments;
+            }
+        } catch (SQLException e){
+            throw new QueryException("Couldn't get database connection!", e);
+        }
+    }
+
+    @Override
     public Optional<AppointmentDetailsDto> getDetailsById(Id<Appointment> appointmentId) {
         String sqlGetDetails = """
             SELECT a.id AS appointment_id, a.date_time AS date_time, a.status AS status,
@@ -272,16 +323,16 @@ public class AppointmentRepositoryImpl implements AppointmentRepository {
             p.nickname as pet_nickname,
             b.pet_type as pet_type,
             pr.name as procedure_type
-            
+
             FROM appointments a
-            
+
             JOIN vets v ON a.vet_id = v.id
         
             JOIN pets p ON p.id = a.pet_id
             JOIN pet_owners o ON p.owner_id = o.id
 
             JOIN vet_specializations s ON v.specialization_id = s.id
-            
+
             JOIN breeds b ON b.id = p.breed_id
             JOIN procedures pr ON pr.id = a.procedure_id
 
@@ -312,8 +363,6 @@ public class AppointmentRepositoryImpl implements AppointmentRepository {
 
                     return Optional.of(detailsDto);
                 }
-
-
             }
 
         } catch (SQLException e){
@@ -321,6 +370,5 @@ public class AppointmentRepositoryImpl implements AppointmentRepository {
         }
 
         return Optional.empty();
-
     }
 }

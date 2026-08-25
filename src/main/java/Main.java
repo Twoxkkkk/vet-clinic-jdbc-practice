@@ -1,20 +1,22 @@
-import application.appointment.AppointmentService;
-import domain.appointment.Appointment;
-import domain.shared.Id;
-import infrastructure.factory.AppointmentRepositoryFactory;
+import application.shared.RepositoryFactory;
+import application.vet.VetService;
+import domain.repository.VetRepository;
+import domain.vet.VetSpecialization;
+import infrastructure.factory.VetRepositoryFactory;
 
-import java.util.UUID;
+import java.time.LocalDateTime;
 
 public class Main {
     public static void main(String[] args) {
 
-        AppointmentRepositoryFactory factory = new AppointmentRepositoryFactory();
+        RepositoryFactory<VetRepository> factory = new VetRepositoryFactory();
 
-        AppointmentService service = new AppointmentService(factory);
+        VetService service = new VetService(factory);
 
-        String app = service.getAppointmentDetails(new Id<>(UUID.fromString("77777777-7777-7777-7777-777777777777")));
+        System.out.println(service.formatMonthlyVetsPerformanceReport());
 
-        System.out.println(app);
+        LocalDateTime localDateTime = LocalDateTime.of(2026, 12, 12, 12, 30);
 
+        System.out.println(service.findAllAvailableForTimeBySpecializationAndProcedure(VetSpecialization.THERAPIST, localDateTime));
     }
 }

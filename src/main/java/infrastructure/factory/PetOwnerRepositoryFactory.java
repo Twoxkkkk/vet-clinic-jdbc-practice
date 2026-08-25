@@ -1,6 +1,6 @@
 package infrastructure.factory;
 
-import application.RepositoryFactory;
+import application.shared.RepositoryFactory;
 import domain.repository.PetOwnerRepository;
 import infrastructure.database.PetOwnerRepositoryImpl;
 

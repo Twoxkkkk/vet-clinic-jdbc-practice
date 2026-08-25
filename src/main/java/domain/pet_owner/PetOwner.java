@@ -7,8 +7,9 @@ import domain.shared.Id;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 public class PetOwner {
 
@@ -35,7 +36,7 @@ public class PetOwner {
         this.setRegistrationDate(registrationDate);
     }
 
-    public void addPetFromDatabase(Id<Pet> id, String nickname, LocalDate dateOfBirth, PetSex sex, double weight, BreedId breedId){
+    public void addPet(Id<Pet> id, String nickname, LocalDate dateOfBirth, PetSex sex, double weight, BreedId breedId){
         this.pets.add(new Pet(id, nickname, dateOfBirth, this.getId(), sex, weight, breedId));
     }
 

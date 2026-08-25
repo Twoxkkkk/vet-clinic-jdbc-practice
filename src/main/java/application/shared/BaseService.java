@@ -1,4 +1,4 @@
-package application;
+package application.shared;
 
 import domain.repository.Repository;
 import domain.shared.Id;

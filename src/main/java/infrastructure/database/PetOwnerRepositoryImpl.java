@@ -163,7 +163,7 @@ public class PetOwnerRepositoryImpl implements PetOwnerRepository {
 
                         double weight = rs.getDouble("weight");
 
-                        petOwner.addPetFromDatabase(petId,petNickname, petDateOfBirth, sex, weight, breedId);
+                        petOwner.addPet(petId,petNickname, petDateOfBirth, sex, weight, breedId);
                     }
                 }
                 return Optional.ofNullable(petOwner);
@@ -209,7 +209,7 @@ public class PetOwnerRepositoryImpl implements PetOwnerRepository {
 
                         double weight = rs.getDouble("weight");
 
-                        petOwner.addPetFromDatabase(petId,petNickname, petDateOfBirth, sex, weight, breedId);
+                        petOwner.addPet(petId,petNickname, petDateOfBirth, sex, weight, breedId);
                     }
                 }
                 return Optional.ofNullable(petOwner);
@@ -255,7 +255,7 @@ public class PetOwnerRepositoryImpl implements PetOwnerRepository {
 
                         double weight = rs.getDouble("weight");
 
-                        petOwner.addPetFromDatabase(petId,petNickname, petDateOfBirth, sex, weight, breedId);
+                        petOwner.addPet(petId,petNickname, petDateOfBirth, sex, weight, breedId);
                     }
                 }
                 return Optional.ofNullable(petOwner);
@@ -301,7 +301,7 @@ public class PetOwnerRepositoryImpl implements PetOwnerRepository {
 
                         double weight = rs.getDouble("weight");
 
-                        petOwner.addPetFromDatabase(petId,petNickname, petDateOfBirth, sex, weight, breedId);
+                        petOwner.addPet(petId,petNickname, petDateOfBirth, sex, weight, breedId);
                     }
                 }
                 return Optional.ofNullable(petOwner);

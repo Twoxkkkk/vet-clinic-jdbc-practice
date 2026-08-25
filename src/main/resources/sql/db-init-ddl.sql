@@ -11,13 +11,6 @@ CREATE TABLE IF NOT EXISTS pet_owners (
 
 );
 
-CREATE TABLE IF NOT EXISTS vet_specializations (
-
-    id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    type VARCHAR(16) NOT NULL CHECK (trim(type) <> '')
-
-);
-
 CREATE TABLE IF NOT EXISTS vets (
 
     id UUID PRIMARY KEY NOT NULL,
@@ -25,9 +18,7 @@ CREATE TABLE IF NOT EXISTS vets (
     last_name VARCHAR(32) NOT NULL CHECK (trim(last_name) <> ''),
     contact_number VARCHAR(16) CHECK (trim(contact_number) <> ''),
     email VARCHAR(256) UNIQUE NOT NULL CHECK (trim(email) <> ''),
-    specialization_id INT NOT NULL,
-
-    CONSTRAINT fk_specialization_id FOREIGN KEY (specialization_id) REFERENCES vet_specializations(id)
+    specialization VARCHAR(16) NOT NULL
 
 );
 
