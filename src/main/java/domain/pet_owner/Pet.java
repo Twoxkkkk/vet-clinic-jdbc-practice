@@ -4,6 +4,7 @@ import domain.shared.BreedId;
 import domain.shared.Id;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class Pet{
 
@@ -89,5 +90,15 @@ public class Pet{
 
     public void setOwnerId(Id<PetOwner> ownerId) {
         this.ownerId = ownerId;
+    }
+
+    @Override
+    public String toString() {
+        return String.format(
+            "%s [Дата рождения: %s][Пол: %s][Вес: %s кг]",
+            this.getNickname(), DateTimeFormatter.ofPattern("d.MM.yyyy").format(this.getDateOfBirth()),
+            this.getSex().alias,
+            this.getWeight()
+        );
     }
 }

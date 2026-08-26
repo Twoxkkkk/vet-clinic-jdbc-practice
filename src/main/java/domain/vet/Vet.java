@@ -3,6 +3,8 @@ package domain.vet;
 import domain.shared.ContactInfo;
 import domain.shared.Id;
 
+import java.time.format.DateTimeFormatter;
+
 public class Vet{
 
     private Id<Vet> id;
@@ -71,5 +73,16 @@ public class Vet{
 
     public void setSpecialization(VetSpecialization specialization) {
         this.specialization = specialization;
+    }
+
+    @Override
+    public String toString() {
+        return String.format(
+            "%s %s [%s][%s][%s]",
+            this.getFirstName(), this.getLastName(),
+            this.getSpecialization().alias,
+            this.getContactInfo().email().getValue(),
+            this.getContactInfo().phone().getValue()
+        );
     }
 }

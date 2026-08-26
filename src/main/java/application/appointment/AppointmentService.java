@@ -1,20 +1,18 @@
 package application.appointment;
 
+import application.appointment.dto.ProcedureInfo;
 import application.shared.BaseService;
-import application.shared.RepositoryFactory;
 import application.appointment.dto.AppointmentDetailsDto;
-import application.appointment.dto.AppointmentOverdueDto;
-import application.shared.NotificationSender;
+import application.appointment.dto.AppointmentPlannedWithinIntervalDto;
 import domain.appointment.Appointment;
 import domain.appointment.AppointmentStatus;
 import domain.pet_owner.Pet;
+import domain.pet_owner.PetOwner;
 import domain.repository.AppointmentRepository;
-import domain.shared.Email;
 import domain.shared.Id;
 import domain.shared.ProcedureId;
 import domain.vet.Vet;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -25,11 +23,13 @@ public class AppointmentService extends BaseService<Appointment, AppointmentRepo
 
     private static final DateTimeFormatter dateTimeHumanizeFormatter = DateTimeFormatter.ofPattern("d MMMM HH:mm", new Locale("ru"));
 
-    public AppointmentService(RepositoryFactory<AppointmentRepository> repositoryFactory){
-        super(repositoryFactory);
+    private static List<ProcedureInfo> cachedProceduresInfo;
+
+    public AppointmentService(AppointmentRepository repository){
+        super(repository);
     }
 
-    public Id<Appointment> scheduleAppointment(Id<Pet> petId, Id<Vet> vetId, ProcedureId procedureId, LocalDateTime dateTime){
+    public void scheduleAppointment(Id<Pet> petId, Id<Vet> vetId, ProcedureId procedureId, LocalDateTime dateTime){
 
         Id<Appointment> appointmentId = Id.generate();
 
@@ -43,23 +43,6 @@ public class AppointmentService extends BaseService<Appointment, AppointmentRepo
         );
 
         repository.save(appointment);
-        return appointmentId;
-    }
-
-    public void rescheduleAppointment(Id<Appointment> appointmentId, LocalDateTime dateTime){
-        LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
-
-        if(dateTime == null || dateTime.isBefore(startOfDay))
-            throw new IllegalArgumentException("Invalid time for appointment reschedule!");
-
-        Appointment appointment = this.getById(appointmentId);
-
-        if (appointment.getStatus() == AppointmentStatus.FINISHED)
-            throw new IllegalArgumentException("Cannot reschedule the appointment that has been already finished!");
-
-        appointment.setDateTimeOfAppointment(dateTime);
-
-        repository.save(appointment);
     }
 
     public void cancelAppointment(Id<Appointment> appointmentId){
@@ -70,54 +53,72 @@ public class AppointmentService extends BaseService<Appointment, AppointmentRepo
         repository.save(appointment);
     }
 
-    public void finishAppointment(Id<Appointment> appointmentId){
-        Appointment appointment = this.getById(appointmentId);
-
-        appointment.setStatus(AppointmentStatus.FINISHED);
-
-        repository.save(appointment);
-    }
-
-    public List<Appointment> getAllByVetIdWithStatus(Id<Vet> vetId, AppointmentStatus status){
-        return repository.findAllByVetIdWithStatus(vetId, status);
-    }
-
-    public List<Appointment> getAllByPetIdWithStatus(Id<Pet> petId, AppointmentStatus status){
-        return repository.findAllByPetIdWithStatus(petId, status);
+    public List<Appointment> getAllByVetIdAndDateTime(Id<Vet> vetId, LocalDateTime  dateTime){
+        return repository.findAllByVetIdAndDateTime(vetId, dateTime);
     }
 
     public List<Appointment> getAllForTodayByVetId(Id<Vet> vetId){
         return repository.findAllForTodayByVetId(vetId);
     }
 
-    public List<Appointment> getAllForTodayByPetId(Id<Pet> petId){
-        return repository.findAllForTodayByPetId(petId);
+
+    public List<Appointment> getAllForTodayByPetOwnerId(Id<PetOwner> petOwnerId){
+        return repository.findAllForTodayByPetOwnerId(petOwnerId);
     }
 
-    public void notifyAboutMissedAppointments(NotificationSender<Email> notificationSender){
+    public List<ProcedureInfo> getAllProcedures(){
 
-        LocalDateTime today = LocalDate.now().atStartOfDay();
+        if(cachedProceduresInfo != null && !cachedProceduresInfo.isEmpty())
+            return cachedProceduresInfo;
 
-        List<AppointmentOverdueDto> missedAppointments = repository.getAllPlannedBeforeDate(today);
 
-        if (missedAppointments.isEmpty()) return;
+        cachedProceduresInfo = repository.getAllProcedures();
 
-        for(AppointmentOverdueDto appointmentOverdueDto: missedAppointments){
-            String formattedDateTimeOfAppointment = dateTimeHumanizeFormatter
-                    .format(appointmentOverdueDto.appointment().getDateTimeOfAppointment());
+        return repository.getAllProcedures();
+    }
 
-            String body = String.format(
-                "Дорогой, %s%nСпешим вам сообщить, что вы не пришли на приём, запланированный на %s.%nВы можете перезаписаться в приложении.",
-                appointmentOverdueDto.ownerInitials(), formattedDateTimeOfAppointment
+    public String getAllProceduresInfo(){
+        List<ProcedureInfo> infos = getAllProcedures();
+        StringBuilder result = new StringBuilder();
+
+        for (ProcedureInfo dto: infos){
+            result.append(
+                String.format(
+                    "%s) %s [Цена: %s][Длительтность в минутах: %s]%n",
+                    dto.id().value(), dto.name(), dto.price(), dto.durationInMinutes()
+                )
             );
+        }
+        return result.toString();
+    }
 
-            notificationSender.send(
-                appointmentOverdueDto.ownerEmail(),
-        "Пропущенный приём.",
-                body
+    public String formatPlannedWithinInterval(List<AppointmentPlannedWithinIntervalDto> dtos){
+        StringBuilder result = new StringBuilder();
+
+        for(AppointmentPlannedWithinIntervalDto dto: dtos){
+            String formattedDateTimeOfAppointment = dateTimeHumanizeFormatter
+                    .format(dto.appointment().getDateTimeOfAppointment());
+
+            result.append(
+                String.format(
+                    "Владелец питомца: %s%nТелефон: %s%nПочта: %s%nЗапланированный приём на: %s%nВремя до приёма: %s минут%n%n",
+                    dto.ownerInitials(), dto.ownersContactInfo().phone().getValue(), dto.ownersContactInfo().email().getValue(),
+                    formattedDateTimeOfAppointment, dto.timeLeftBeforeAppointment()
+                )
             );
         }
 
+        return result.toString();
+    }
+
+    public Appointment findPlannedByPetOwnerIdAndDateTime(Id<PetOwner> petOwnerId, LocalDateTime dateTime){
+        return repository.findPlannedByPetOwnerIdAndDateTime(petOwnerId, dateTime).orElseThrow(
+            () -> new IllegalArgumentException("Couldn't get certain appointment with given date time and pet owner!")
+        );
+    }
+
+    public List<AppointmentPlannedWithinIntervalDto> getAllWithinInterval(int interval, int amount){
+        return repository.getAmountPlannedTodayWithInterval(interval, amount);
     }
 
     public String getAppointmentDetails(Id<Appointment> appointmentId){
@@ -128,12 +129,20 @@ public class AppointmentService extends BaseService<Appointment, AppointmentRepo
 
             AppointmentDetailsDto details = detailsDto.get();
 
-            return String.format(
+            String result = String.format(
                 "[%s][%s][Статус: %s]%nВетеринар: %s (%s)%nПитомец: %s (%s)%nХозяин: %s%nТелефон: %s%n",
                 dateTimeHumanizeFormatter.format(details.appointmentDateTime()), details.procedureType(), details.appointmentStatus().alias,
                 details.vetInitials(), details.vetSpecialization().alias, details.petNickname(), details.petType(),
                 details.ownerInitials(), details.ownerContactNumber()
             );
+
+            if(details.diagnosis() != null)
+                result += String.format(
+                    "Во время приёма была произведена запись в историю болезней:%nДиагноз: %s%nЛечение: %s%n",
+                    details.diagnosis(), details.treatment()
+                );
+
+            return result;
         }
 
         throw new IllegalArgumentException(

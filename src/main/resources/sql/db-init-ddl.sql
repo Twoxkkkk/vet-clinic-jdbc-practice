@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS vets (
     last_name VARCHAR(32) NOT NULL CHECK (trim(last_name) <> ''),
     contact_number VARCHAR(16) CHECK (trim(contact_number) <> ''),
     email VARCHAR(256) UNIQUE NOT NULL CHECK (trim(email) <> ''),
-    specialization VARCHAR(16) NOT NULL
+    specialization VARCHAR(16) NOT NULL CHECK (trim(specialization) <> '')
 
 );
 
@@ -50,7 +50,8 @@ CREATE TABLE IF NOT EXISTS procedures (
     id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     name VARCHAR(32) NOT NULL CHECK (trim(name) <> ''),
     price NUMERIC NOT NULL,
-    duration_minutes INT DEFAULT 30
+    duration_minutes INT DEFAULT 30,
+    vet_specialization VARCHAR(16) NOT NULL CHECK (trim(vet_specialization) <> '')
 );
 
 CREATE TABLE IF NOT EXISTS appointments (
@@ -75,7 +76,7 @@ CREATE TABLE IF NOT EXISTS medical_records (
     pet_id UUID NOT NULL,
     diagnosis VARCHAR(64) NOT NULL,
     treatment TEXT NOT NULL,
-    record_date DATE,
+    record_date DATE DEFAULT CURRENT_DATE,
 
     CONSTRAINT fk_vet_id FOREIGN KEY (vet_id) REFERENCES vets(id),
     CONSTRAINT fk_pet_id FOREIGN KEY (pet_id) REFERENCES pets(id) ON DELETE CASCADE

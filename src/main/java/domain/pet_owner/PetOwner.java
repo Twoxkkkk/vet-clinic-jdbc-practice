@@ -103,4 +103,14 @@ public class PetOwner {
     public void setRegistrationDate(LocalDate registrationDate) {
         this.registrationDate = registrationDate;
     }
+
+    @Override
+    public String toString() {
+        return String.format(
+            "%s %s [%s][%s]",
+            this.getFirstName(), this.getLastName(),
+            this.getContactInfo().email().getValue(),
+            this.getContactInfo().phone().getValue()
+        );
+    }
 }

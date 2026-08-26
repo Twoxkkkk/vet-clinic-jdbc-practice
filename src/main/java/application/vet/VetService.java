@@ -1,7 +1,6 @@
 package application.vet;
 
 import application.shared.BaseService;
-import application.shared.RepositoryFactory;
 import application.vet.dto.VetPerformanceDto;
 import domain.repository.VetRepository;
 import domain.shared.*;
@@ -16,31 +15,8 @@ import java.util.List;
 
 public class VetService extends BaseService<Vet, VetRepository> {
 
-    public VetService(RepositoryFactory<VetRepository> repositoryFactory){
-        super(repositoryFactory);
-    }
-
-    public Id<Vet> registerVet(String firstName, String lastName, ContactInfo contactInfo, VetSpecialization specialization){
-
-        if (repository.findByPhoneNumber(contactInfo.phone()).isPresent()) {
-            throw new IllegalArgumentException("Ветеринар с таким номером телефона уже зарегистрирован!");
-        }
-        if (repository.findByEmail(contactInfo.email()).isPresent()) {
-            throw new IllegalArgumentException("Ветеринар с таким email уже зарегистрирован!");
-        }
-
-        Id<Vet> vetId = Id.generate();
-
-        Vet vet = new Vet(
-            vetId,
-            firstName,
-            lastName,
-            specialization,
-            contactInfo
-        );
-
-        repository.save(vet);
-        return vetId;
+    public VetService(VetRepository repository){
+        super(repository);
     }
 
     public Vet findByPhoneNumber(Phone number){
@@ -57,7 +33,7 @@ public class VetService extends BaseService<Vet, VetRepository> {
 
 
     public List<Vet> findAllAvailableForTimeBySpecializationAndProcedure(VetSpecialization specialization, LocalDateTime dateTime){
-        return repository.findAllAvailableForTimeBySpecializationAndProcedure(specialization, dateTime);
+        return repository.findAllAvailableForTimeBySpecialization(specialization, dateTime);
     }
 
     public String formatMonthlyVetsPerformanceReport(){
@@ -69,7 +45,7 @@ public class VetService extends BaseService<Vet, VetRepository> {
 
         List<VetPerformanceDto> vetsPerformanceDtos = repository.getVetsPerformanceReport(startOfAMonth, endOfAMonth);
 
-        if(vetsPerformanceDtos.isEmpty()) return "";
+        if(vetsPerformanceDtos.isEmpty()) return null;
 
         StringBuilder result = new StringBuilder();
 

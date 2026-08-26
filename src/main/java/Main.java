@@ -1,22 +1,12 @@
-import application.shared.RepositoryFactory;
-import application.vet.VetService;
-import domain.repository.VetRepository;
-import domain.vet.VetSpecialization;
-import infrastructure.factory.VetRepositoryFactory;
-
-import java.time.LocalDateTime;
+import presentation.cli.MainConsoleController;
+import presentation.cli.shared.ServicesFactory;
 
 public class Main {
     public static void main(String[] args) {
 
-        RepositoryFactory<VetRepository> factory = new VetRepositoryFactory();
+        ServicesFactory services = new ServicesFacade();
 
-        VetService service = new VetService(factory);
-
-        System.out.println(service.formatMonthlyVetsPerformanceReport());
-
-        LocalDateTime localDateTime = LocalDateTime.of(2026, 12, 12, 12, 30);
-
-        System.out.println(service.findAllAvailableForTimeBySpecializationAndProcedure(VetSpecialization.THERAPIST, localDateTime));
+        MainConsoleController mainConsoleController = new MainConsoleController(services);
+        mainConsoleController.start();
     }
 }

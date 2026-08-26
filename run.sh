@@ -19,6 +19,7 @@ echo "Running App Container.."
 (docker build -t jdbc-showcase-image . && clear) \
 && docker run -it --rm \
   --network vetclinic-network \
+  --env-file postgres.env \
   jdbc-showcase-image:latest \
 #^^^ билд и запуск основного приложения 
 

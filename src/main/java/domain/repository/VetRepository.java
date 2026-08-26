@@ -2,7 +2,6 @@ package domain.repository;
 
 import application.vet.dto.VetPerformanceDto;
 import domain.shared.Email;
-import domain.shared.Id;
 import domain.shared.Phone;
 import domain.vet.Vet;
 import domain.vet.VetSpecialization;
@@ -18,7 +17,7 @@ public interface VetRepository extends Repository<Vet>{
     Optional<Vet> findByPhoneNumber(Phone phone);
     Optional<Vet> findByEmail(Email email);
 
-    List<Vet> findAllAvailableForTimeBySpecializationAndProcedure(VetSpecialization specialization, LocalDateTime dateTime);
+    List<Vet> findAllAvailableForTimeBySpecialization(VetSpecialization specialization, LocalDateTime dateTime);
 
     List<VetPerformanceDto> getVetsPerformanceReport(LocalDate start, LocalDate end);
 

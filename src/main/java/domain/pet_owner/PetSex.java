@@ -6,7 +6,7 @@ public enum PetSex {
     FEMALE("Девочка"),
     UNKNOWN("Неизвестно");
 
-    private final String alias;
+    public final String alias;
 
     PetSex(String alias){
         this.alias = alias;

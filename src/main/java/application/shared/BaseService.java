@@ -7,12 +7,12 @@ public abstract class BaseService <E, R extends Repository<E>> {
 
     protected final R repository;
 
-    public BaseService(RepositoryFactory<R> repositoryFactory){
-        if(repositoryFactory == null){
+    public BaseService(R repository){
+        if(repository == null){
             throw new IllegalArgumentException("Couldn't get valid repository factory!");
         }
 
-        this.repository = repositoryFactory.create();
+        this.repository = repository;
     }
 
     public E getById(Id<E> id){

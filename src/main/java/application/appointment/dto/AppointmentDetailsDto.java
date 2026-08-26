@@ -26,5 +26,6 @@ public record AppointmentDetailsDto(
 
     String procedureType,
 
-    List<MedicalRecord> medicalRecords
+    String diagnosis,
+    String treatment
 ) {}

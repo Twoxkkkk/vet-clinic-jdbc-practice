@@ -1,9 +1,6 @@
 package infrastructure.database;
 
 import application.vet.dto.VetPerformanceDto;
-import domain.pet_owner.Pet;
-import domain.pet_owner.PetOwner;
-import domain.pet_owner.PetSex;
 import domain.repository.VetRepository;
 import domain.shared.*;
 import domain.vet.Vet;
@@ -154,7 +151,7 @@ public class VetRepositoryImpl implements VetRepository {
     }
 
     @Override
-    public List<Vet> findAllAvailableForTimeBySpecializationAndProcedure(VetSpecialization specialization, LocalDateTime dateTime) {
+    public List<Vet> findAllAvailableForTimeBySpecialization(VetSpecialization specialization, LocalDateTime dateTime) {
         String sqlFindAllBySpecAndTimeAndProcedure = """
         SELECT v.* FROM vets v
         WHERE specialization = ?
@@ -166,7 +163,7 @@ public class VetRepositoryImpl implements VetRepository {
             WHERE a.vet_id = v.id
 
             AND a.status = 'PLANNED'
-            AND ? BETWEEN a.date_time AND a.date_time + p.duration_minutes * INTERVAL '1 minute'
+            AND ? BETWEEN a.date_time AND (a.date_time + p.duration_minutes * INTERVAL '1 minute')
         )
         """;
 

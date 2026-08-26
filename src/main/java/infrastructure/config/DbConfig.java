@@ -9,15 +9,11 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-//TODO:
-//handle nulls from .env file
-
 public class DbConfig {
 
     private final String postgresUser;
     private final String postgresPassword;
     private final String connectionString;
-    private final String postgresDBName;
 
     private static final DbConfig INSTANCE = new DbConfig();
     public ResourceLoader scriptLoader;
@@ -25,14 +21,10 @@ public class DbConfig {
     private DbConfig() {
         checkDriver();
 
-        Dotenv dotenv = Dotenv.configure()
-                .filename("postgres.env")
-                .ignoreIfMissing()
-                .load();
+        postgresUser = System.getenv("POSTGRES_USER");
+        postgresPassword = System.getenv("POSTGRES_PASSWORD");
 
-        postgresUser = dotenv.get("POSTGRES_USER");
-        postgresPassword = dotenv.get("POSTGRES_PASSWORD");
-        postgresDBName = dotenv.get("POSTGRES_DB");
+        String postgresDBName = System.getenv("POSTGRES_DB");
 
         connectionString = String
                 .format("jdbc:postgresql://vetclinic-db:5432/%s", postgresDBName);
@@ -45,6 +37,13 @@ public class DbConfig {
     public Connection getConnection() throws SQLException {
         Connection con = DriverManager.getConnection(connectionString, postgresUser, postgresPassword);
         con.setAutoCommit(false);
+
+        try (Statement stmt = con.createStatement()) {
+            stmt.execute("SET TIME ZONE 'Europe/Moscow'");
+        } catch (SQLException e) {
+            con.close();
+            throw e;
+        }
 
         return con;
     }

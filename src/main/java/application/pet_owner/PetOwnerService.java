@@ -1,7 +1,6 @@
 package application.pet_owner;
 
 import application.shared.BaseService;
-import application.shared.RepositoryFactory;
 import domain.pet_owner.Pet;
 import domain.pet_owner.PetOwner;
 import domain.pet_owner.PetSex;
@@ -12,17 +11,11 @@ import java.time.LocalDate;
 
 public class PetOwnerService extends BaseService<PetOwner, PetOwnerRepository> {
 
-    public PetOwnerService(RepositoryFactory<PetOwnerRepository> repositoryFactory){
-        super(repositoryFactory);
+    public PetOwnerService(PetOwnerRepository repository){
+        super(repository);
     }
 
-    public PetOwner getByPetId(Id<Pet> petId){
-        return repository.findByPetId(petId).orElseThrow(
-            () -> new IllegalArgumentException("Invalid pet id!")
-        );
-    }
-
-    public Id<PetOwner> registerPetOwner(String firstName, String lastName, Address address, ContactInfo contactInfo){
+    public void registerPetOwner(String firstName, String lastName, Address address, ContactInfo contactInfo){
 
         if (repository.findByPhoneNumber(contactInfo.phone()).isPresent()) {
             throw new IllegalArgumentException("Клиент с таким номером телефона уже зарегистрирован!");
@@ -43,10 +36,17 @@ public class PetOwnerService extends BaseService<PetOwner, PetOwnerRepository> {
         );
 
         repository.save(petOwner);
-        return petOwnerId;
     }
 
-    public Id<Pet> registerPet(Id<PetOwner> petOwnerId, String nickname, LocalDate dateOfBirth, PetSex sex, double weight, BreedId breedId){
+    public BreedId getBreedIdByName(String name){
+        return this.repository.findBreedIdByStringPattern(name).orElseThrow(
+            () -> new IllegalArgumentException("Couldn't find breed with specific name!")
+        );
+    }
+
+
+
+    public void registerPet(Id<PetOwner> petOwnerId, String nickname, LocalDate dateOfBirth, PetSex sex, double weight, BreedId breedId){
 
         PetOwner petOwner = this.getById(petOwnerId);
 
@@ -62,7 +62,6 @@ public class PetOwnerService extends BaseService<PetOwner, PetOwnerRepository> {
         );
 
         repository.save(petOwner);
-        return petId;
     }
 
     public PetOwner findByPhoneNumber(Phone number){
@@ -76,7 +75,4 @@ public class PetOwnerService extends BaseService<PetOwner, PetOwnerRepository> {
             () -> new IllegalArgumentException("Couldn't find the pet owner with the given email!")
         );
     }
-
-
-
 }
