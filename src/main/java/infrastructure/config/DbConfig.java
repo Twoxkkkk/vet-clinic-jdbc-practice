@@ -4,10 +4,7 @@ import infrastructure.config.utils.ResourceLoader;
 import io.github.cdimascio.dotenv.Dotenv;
 
 import java.io.*;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public class DbConfig {
 
@@ -52,6 +49,15 @@ public class DbConfig {
 
         try (Connection con = getConnection()) {
             try {
+
+                DatabaseMetaData metaData = con.getMetaData();
+
+                try (ResultSet rs = metaData.getTables(null, null, "pets", new String[]{"TABLE"})) {
+                    if (rs.next()) {
+                        return;
+                    }
+                }
+
                 String tablesInitScript = scriptLoader.load("db-init-ddl.sql", null);
                 String dataInsertionScript = scriptLoader.load("db-init-dml.sql", null);
 

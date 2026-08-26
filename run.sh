@@ -1,12 +1,12 @@
 docker network create vetclinic-network &>/dev/null
 
-docker run -d --rm \
+docker run -d \
   -v ./data:/var/lib/postgresql \
   --env-file postgres.env \
   --network vetclinic-network \
   -p 5432:5432 \
   --name vetclinic-db postgres:latest &>/dev/null
-#^^^ запуск потсгри в фоне с флагом --rm для удаления контейнера сразу после его остановки
+#^^^ запуск потсгри в фоне
 
 echo "Running Database Container.."
 sleep 3
