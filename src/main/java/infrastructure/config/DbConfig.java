@@ -1,7 +1,6 @@
 package infrastructure.config;
 
 import infrastructure.config.utils.ResourceLoader;
-import io.github.cdimascio.dotenv.Dotenv;
 
 import java.io.*;
 import java.sql.*;
