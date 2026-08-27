@@ -5,7 +5,7 @@ docker run -d \
   --env-file postgres.env \
   --network vetclinic-network \
   -p 5432:5432 \
-  --name vetclinic-db postgres:latest &>/dev/null
+  --name vetclinic-db postgres:latest &>/dev/null || docker start vetclinic-db &>/dev/null
 #^^^ запуск потсгри в фоне
 
 echo "Running Database Container.."

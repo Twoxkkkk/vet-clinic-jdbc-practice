@@ -272,10 +272,10 @@ public class AppointmentRepositoryImpl implements AppointmentRepository {
     public List<AppointmentPlannedWithinIntervalDto> getAmountPlannedTodayWithInterval(int intervalInMinutes, int amount) {
         String sqlGetAllWithinInterval= """
         SELECT app.*,
-               o.email AS owner_email,
-               o.contact_number AS owner_phone,
-               CONCAT(o.last_name, ' ', SUBSTRING(o.first_name FROM 1 FOR 1), '.') AS owner_initials,
-               EXTRACT(EPOCH FROM(app.date_time - NOW())) / 60 AS minutes_left
+        o.email AS owner_email,
+        o.contact_number AS owner_phone,
+        CONCAT(o.last_name, ' ', SUBSTRING(o.first_name FROM 1 FOR 1), '.') AS owner_initials,
+        EXTRACT(EPOCH FROM(app.date_time - NOW())) / 60 AS minutes_left
         FROM appointments app
         
         JOIN pets p ON app.pet_id = p.id
